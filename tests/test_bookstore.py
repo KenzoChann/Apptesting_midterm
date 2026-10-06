@@ -74,4 +74,33 @@ def test_checkout_with_items_creates_order():
 
 # ---- YOUR REGRESSION TESTS (the bug hunt) ----
 
-# ---- YOUR SLOW TESTS (at least 2) ----
+
+@pytest.mark.slow
+def test_bulk_import_of_30000_products():
+    """Author: Kaung. Slow: bulk import of a very large product list.
+
+    Slow because import_products() loops over 30,000 products one by one,
+    and every product goes through add_product() and a time.sleep(0) call.
+    """
+    catalog = Catalog()
+    cart = Cart(catalog)
+    big_list = [(i, f"Book {i}", 10) for i in range(30000)]
+    cart.import_products(big_list)
+    # check the real data, not the return value
+    assert len(catalog.products) == 30000
+    assert catalog.products[29999]["title"] == "Book 29999"
+
+
+@pytest.mark.slow
+def test_many_searches_on_a_large_catalog():
+    """Author: Kaung. Slow: many searches over a large catalog.
+
+    Slow because search() checks every product title each time, so
+    200 searches over 100,000 products means about 20 million checks.
+    """
+    catalog = Catalog()
+    for i in range(100000):
+        catalog.add_product(i, f"Book {i}", 10)
+    for k in range(200):
+        results = catalog.search(f"Book {k}")
+        assert k in results
