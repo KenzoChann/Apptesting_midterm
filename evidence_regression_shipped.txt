@@ -1,0 +1,94 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026
+configfile: pytest.ini
+collecting ... collected 12 items / 8 deselected / 4 selected
+
+tests/test_bookstore.py::test_login_accepts_password_with_symbols FAILED [ 25%]
+tests/test_bookstore.py::test_cart_total_includes_last_item FAILED       [ 50%]
+tests/test_bookstore.py::test_checkout_empty_cart_returns_none FAILED    [ 75%]
+tests/test_bookstore.py::test_import_products_returns_exact_count FAILED [100%]
+
+================================== FAILURES ===================================
+__________________ test_login_accepts_password_with_symbols ___________________
+
+    @pytest.mark.regression
+    def test_login_accepts_password_with_symbols():
+        """Author: Kaung. Regression for Users.login().
+    
+        Wrong behaviour: login() removes all non-letter/number characters from
+        the typed password, so "pass@123" becomes "pass123" and never matches.
+        Correct behaviour: login() compares the exact password that was stored.
+        """
+        users = Users()
+        users.register("carol", "pass@123")
+>       assert users.login("carol", "pass@123") is True
+E       AssertionError: assert False is True
+E        +  where False = login('carol', 'pass@123')
+E        +    where login = <bookstore_app.users.Users object at 0x000001F566C556A0>.login
+
+tests\test_bookstore.py:85: AssertionError
+_____________________ test_cart_total_includes_last_item ______________________
+
+    @pytest.mark.regression
+    def test_cart_total_includes_last_item():
+        """Author: Kaung. Regression for Cart.total().
+    
+        Wrong behaviour: the loop stops one item early, so the last item is not
+        counted (10 + 20 + 5 returns 30).
+        Correct behaviour: total() adds every item in the cart (35).
+        """
+        catalog = Catalog()
+        catalog.add_product(1, "A", 10)
+        catalog.add_product(2, "B", 20)
+        catalog.add_product(3, "C", 5)
+        cart = Cart(catalog)
+        cart.add(1)
+        cart.add(2)
+        cart.add(3)
+>       assert cart.total() == 35
+E       assert 30 == 35
+E        +  where 30 = total()
+E        +    where total = <bookstore_app.cart.Cart object at 0x000001F566C56900>.total
+
+tests\test_bookstore.py:104: AssertionError
+____________________ test_checkout_empty_cart_returns_none ____________________
+
+    @pytest.mark.regression
+    def test_checkout_empty_cart_returns_none():
+        """Author: Kaung. Regression for Cart.checkout().
+    
+        Wrong behaviour: checkout of an empty cart returns [] and saves an
+        empty order in the history.
+        Correct behaviour (from the docstring): return None and save no order.
+        """
+        cart = Cart(Catalog())
+>       assert cart.checkout() is None
+E       assert [] is None
+E        +  where [] = checkout()
+E        +    where checkout = <bookstore_app.cart.Cart object at 0x000001F567CA87D0>.checkout
+
+tests\test_bookstore.py:116: AssertionError
+__________________ test_import_products_returns_exact_count ___________________
+
+    @pytest.mark.regression
+    def test_import_products_returns_exact_count():
+        """Author: Kaung. Regression for Cart.import_products().
+    
+        Wrong behaviour: importing 2 products returns 3 (count + 1).
+        Correct behaviour: return how many products were imported (2).
+        """
+        cart = Cart(Catalog())
+>       assert cart.import_products([(1, "A", 5), (2, "B", 6)]) == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = import_products([(1, 'A', 5), (2, 'B', 6)])
+E        +    where import_products = <bookstore_app.cart.Cart object at 0x000001F567CA9310>.import_products
+
+tests\test_bookstore.py:128: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_bookstore.py::test_login_accepts_password_with_symbols - As...
+FAILED tests/test_bookstore.py::test_cart_total_includes_last_item - assert 3...
+FAILED tests/test_bookstore.py::test_checkout_empty_cart_returns_none - asser...
+FAILED tests/test_bookstore.py::test_import_products_returns_exact_count - As...
+======================= 4 failed, 8 deselected in 0.10s =======================

@@ -1,0 +1,75 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026
+configfile: pytest.ini
+collecting ... collected 14 items / 8 deselected / 6 selected
+
+tests/test_bookstore.py::test_login_accepts_password_with_symbols PASSED [ 16%]
+tests/test_bookstore.py::test_cart_total_includes_last_item PASSED       [ 33%]
+tests/test_bookstore.py::test_checkout_empty_cart_returns_none PASSED    [ 50%]
+tests/test_bookstore.py::test_import_products_returns_exact_count PASSED [ 66%]
+tests/test_bookstore.py::test_search_ignores_upper_and_lower_case FAILED [ 83%]
+tests/test_bookstore.py::test_history_cannot_be_changed_from_outside FAILED [100%]
+
+================================== FAILURES ===================================
+__________________ test_search_ignores_upper_and_lower_case ___________________
+
+    @pytest.mark.regression
+    def test_search_ignores_upper_and_lower_case():
+        """Author: Kaung. Regression for Catalog.search().
+    
+        Wrong behaviour: search("python") does not find "Python Testing",
+        because the match is case-sensitive.
+        Correct behaviour: a search finds titles whatever the letter case is.
+        """
+        catalog = Catalog()
+        catalog.add_product(1, "Python Testing", 30)
+>       assert catalog.search("python") == [1]
+E       assert [] == [1]
+E         
+E         Right contains one more item: 1
+E         
+E         Full diff:
+E         + []
+E         - [
+E         -     1,
+E         - ]
+
+tests\test_bookstore.py:172: AssertionError
+_________________ test_history_cannot_be_changed_from_outside _________________
+
+    @pytest.mark.regression
+    def test_history_cannot_be_changed_from_outside():
+        """Author: Kaung. Regression for Cart.history().
+    
+        Wrong behaviour: history() returns the cart's own internal list, so
+        changing the returned list changes the saved order history.
+        Correct behaviour: history() returns a copy, and the saved orders stay
+        the same.
+        """
+        catalog = Catalog()
+        catalog.add_product(1, "A", 10)
+        cart = Cart(catalog)
+        cart.add(1)
+        cart.checkout()
+        past = cart.history()
+        past.append([99])
+        past[0].append(42)
+>       assert cart.history() == [[1]]
+E       AssertionError: assert [[1, 42], [99]] == [[1]]
+E         
+E         At index 0 diff: [1, 42] != [1]
+E         Left contains one more item: [99]
+E         
+E         Full diff:
+E           [
+E               [...
+E         
+E         ...Full output truncated (7 lines hidden), use '-vv' to show
+
+tests\test_bookstore.py:193: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_bookstore.py::test_search_ignores_upper_and_lower_case - as...
+FAILED tests/test_bookstore.py::test_history_cannot_be_changed_from_outside
+================== 2 failed, 4 passed, 8 deselected in 0.08s ==================

@@ -1,0 +1,72 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\User\Desktop\Apptesting_Midterm\st211-midterm-bookstore-fall-2026
+configfile: pytest.ini
+collecting ... collected 8 items
+
+ai_review/test_ai_generated.py::test_cart_total_sums_items FAILED        [ 12%]
+ai_review/test_ai_generated.py::test_login_rejects_wrong_password PASSED [ 25%]
+ai_review/test_ai_generated.py::test_search_finds_exact_title PASSED     [ 37%]
+ai_review/test_ai_generated.py::test_import_returns_count FAILED         [ 50%]
+ai_review/test_ai_generated.py::test_register_duplicate_returns_false PASSED [ 62%]
+ai_review/test_ai_generated.py::test_checkout_empty_returns_none FAILED  [ 75%]
+ai_review/test_ai_generated.py::test_add_to_cart_returns_true_for_known_product PASSED [ 87%]
+ai_review/test_ai_generated.py::test_search_is_limited_to_ten_results FAILED [100%]
+
+================================== FAILURES ===================================
+_________________________ test_cart_total_sums_items __________________________
+
+    def test_cart_total_sums_items():
+        """Claims to check the cart total is correct."""
+        cat = Catalog(); cat.add_product(1, "A", 10); cat.add_product(2, "B", 20)
+        c = Cart(cat); c.add(1); c.add(2)
+>       assert c.total() == 30
+E       assert 10 == 30
+E        +  where 10 = total()
+E        +    where total = <bookstore_app.cart.Cart object at 0x000001E08D055E80>.total
+
+ai_review\test_ai_generated.py:16: AssertionError
+__________________________ test_import_returns_count __________________________
+
+    def test_import_returns_count():
+        """Claims to check the bulk-import count."""
+        c = Cart(Catalog())
+>       assert c.import_products([(1, "A", 5), (2, "B", 6)]) == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = import_products([(1, 'A', 5), (2, 'B', 6)])
+E        +    where import_products = <bookstore_app.cart.Cart object at 0x000001E08CFCBB10>.import_products
+
+ai_review\test_ai_generated.py:34: AssertionError
+______________________ test_checkout_empty_returns_none _______________________
+
+    def test_checkout_empty_returns_none():
+        """Claims to check that checking out an empty cart returns None."""
+>       assert Cart(Catalog()).checkout() is None
+E       assert [] is None
+E        +  where [] = checkout()
+E        +    where checkout = <bookstore_app.cart.Cart object at 0x000001E08CFCBED0>.checkout
+E        +      where <bookstore_app.cart.Cart object at 0x000001E08CFCBED0> = Cart(<bookstore_app.catalog.Catalog object at 0x000001E08D03F100>)
+E        +        where <bookstore_app.catalog.Catalog object at 0x000001E08D03F100> = Catalog()
+
+ai_review\test_ai_generated.py:45: AssertionError
+____________________ test_search_is_limited_to_ten_results ____________________
+
+    def test_search_is_limited_to_ten_results():
+        """Claims the catalogue search returns at most ten results."""
+        cat = Catalog()
+        for i in range(20):
+            cat.add_product(i, "match", 1)
+>       assert len(cat.search("match")) <= 10
+E       AssertionError: assert 20 <= 10
+E        +  where 20 = len([0, 1, 2, 3, 4, 5, ...])
+E        +    where [0, 1, 2, 3, 4, 5, ...] = search('match')
+E        +      where search = <bookstore_app.catalog.Catalog object at 0x000001E08D0E0170>.search
+
+ai_review\test_ai_generated.py:60: AssertionError
+=========================== short test summary info ===========================
+FAILED ai_review/test_ai_generated.py::test_cart_total_sums_items - assert 10...
+FAILED ai_review/test_ai_generated.py::test_import_returns_count - AssertionE...
+FAILED ai_review/test_ai_generated.py::test_checkout_empty_returns_none - ass...
+FAILED ai_review/test_ai_generated.py::test_search_is_limited_to_ten_results
+========================= 4 failed, 4 passed in 0.08s =========================
