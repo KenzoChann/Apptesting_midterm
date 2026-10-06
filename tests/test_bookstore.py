@@ -191,3 +191,18 @@ def test_history_cannot_be_changed_from_outside():
     past.append([99])
     past[0].append(42)
     assert cart.history() == [[1]]
+
+@pytest.mark.regression
+@pytest.mark.slow
+def test_large_import_returns_exact_count():
+    """Author: Kaung. Bonus: regression and slow at the same time.
+
+    Regression: import_products() once returned count + 1, so importing
+    200,000 products returned 200,001. The correct result is 200,000.
+    Slow: it imports 200,000 products one by one, which takes a long time.
+    """
+    catalog = Catalog()
+    cart = Cart(catalog)
+    big_list = [(i, f"Book {i}", 10) for i in range(200000)]
+    assert cart.import_products(big_list) == 200000
+    assert len(catalog.products) == 200000
