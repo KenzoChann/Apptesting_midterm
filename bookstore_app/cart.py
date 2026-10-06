@@ -40,7 +40,7 @@ class Cart:
 
     def history(self):
         """Return the list of past orders."""
-        return self.orders
+        return [list(order) for order in self.orders]
 
     def import_products(self, product_list):
         """Bulk-import (product_id, title, price) tuples into the catalog.
