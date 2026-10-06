@@ -21,6 +21,57 @@ def test_example_register():
 
 # ---- YOUR SMOKE TESTS (at least 5) ----
 
+@pytest.mark.smoke
+def test_register_then_login_works():
+    """Author: Kaung. Smoke: a new user can register and then log in."""
+    users = Users()
+    assert users.register("alice", "secret123") is True
+    assert users.login("alice", "secret123") is True
+
+
+@pytest.mark.smoke
+def test_login_rejects_wrong_password():
+    """Author: Kaung. Smoke: login must refuse a wrong password."""
+    users = Users()
+    users.register("bob", "secret123")
+    assert users.login("bob", "notmypassword") is False
+
+
+@pytest.mark.smoke
+def test_add_product_is_saved():
+    """Author: Kaung. Smoke: a product added to the catalog is stored."""
+    catalog = Catalog()
+    catalog.add_product(1, "Python", 30)
+    assert 1 in catalog.products
+    assert catalog.products[1]["title"] == "Python"
+    assert catalog.search("Python") == [1]
+
+
+@pytest.mark.smoke
+def test_add_to_cart_puts_item_in_cart():
+    """Author: Kaung. Smoke: a known product reaches the cart."""
+    catalog = Catalog()
+    catalog.add_product(1, "Python", 30)
+    cart = Cart(catalog)
+    assert cart.add(1) is True
+    assert cart.items == [1]
+
+
+@pytest.mark.smoke
+def test_checkout_with_items_creates_order():
+    """Author: Kaung. Smoke: checkout of a non-empty cart gives an order."""
+    catalog = Catalog()
+    catalog.add_product(1, "Python", 30)
+    catalog.add_product(2, "Testing", 20)
+    cart = Cart(catalog)
+    cart.add(1)
+    cart.add(2)
+    order = cart.checkout()
+    assert order == [1, 2]
+    assert cart.items == []
+    assert cart.history() == [[1, 2]]
+
+
 # ---- YOUR REGRESSION TESTS (the bug hunt) ----
 
 # ---- YOUR SLOW TESTS (at least 2) ----
