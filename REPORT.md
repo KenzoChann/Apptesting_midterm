@@ -67,3 +67,13 @@ Yes. The markers describe different characteristics of a test, not separate boxe
 
 **5. Bug finders and bug fixers are often different people in a real QA team. What does that separation change about how a bug report must be written?**
 The fixer cannot ask the finder what they meant, so the report must stand on its own. It must give the exact function, the exact input, the actual wrong result (pasted, not described), the expected result, and the reason why that expected result is correct. Best of all it includes a failing test that the fixer can run. This is why `FINDINGS.md` has the Observed and Expected pair: for example, "`cart_total` returned 30 for items of 10, 20 and 5; it should return 35".
+
+## Bonus -- A test with two markers
+
+`test_large_import_returns_exact_count` carries both `@pytest.mark.regression` and `@pytest.mark.slow`.
+
+**Why it is a regression test.** It checks a bug that was found and fixed: `import_products()` returned `count + 1`. On the original code the test fails (`200001 == 200000`) and after the fix it passes.
+
+**Why it is slow.** It imports 200,000 products one by one, and each product goes through `add_product()`. This takes much longer than a smoke test, which finishes in a fraction of a second.
+
+**Where it belongs in CI/CD.** In the scheduled nightly run with the full suite, not in the smoke run on every push. It must still run before a release. The two markers describe two different characteristics of the same test: what it protects (a fixed bug) and how heavy it is (a lot of data).
