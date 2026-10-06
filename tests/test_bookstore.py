@@ -158,3 +158,36 @@ def test_many_searches_on_a_large_catalog():
     for k in range(200):
         results = catalog.search(f"Book {k}")
         assert k in results
+
+@pytest.mark.regression
+def test_search_ignores_upper_and_lower_case():
+    """Author: Kaung. Regression for Catalog.search().
+
+    Wrong behaviour: search("python") does not find "Python Testing",
+    because the match is case-sensitive.
+    Correct behaviour: a search finds titles whatever the letter case is.
+    """
+    catalog = Catalog()
+    catalog.add_product(1, "Python Testing", 30)
+    assert catalog.search("python") == [1]
+    assert catalog.search("TESTING") == [1]
+
+
+@pytest.mark.regression
+def test_history_cannot_be_changed_from_outside():
+    """Author: Kaung. Regression for Cart.history().
+
+    Wrong behaviour: history() returns the cart's own internal list, so
+    changing the returned list changes the saved order history.
+    Correct behaviour: history() returns a copy, and the saved orders stay
+    the same.
+    """
+    catalog = Catalog()
+    catalog.add_product(1, "A", 10)
+    cart = Cart(catalog)
+    cart.add(1)
+    cart.checkout()
+    past = cart.history()
+    past.append([99])
+    past[0].append(42)
+    assert cart.history() == [[1]]
