@@ -72,7 +72,60 @@ def test_checkout_with_items_creates_order():
     assert cart.history() == [[1, 2]]
 
 
-# ---- YOUR REGRESSION TESTS (the bug hunt) ----
+@pytest.mark.regression
+def test_login_accepts_password_with_symbols():
+    """Author: Kaung. Regression for Users.login().
+
+    Wrong behaviour: login() removes all non-letter/number characters from
+    the typed password, so "pass@123" becomes "pass123" and never matches.
+    Correct behaviour: login() compares the exact password that was stored.
+    """
+    users = Users()
+    users.register("carol", "pass@123")
+    assert users.login("carol", "pass@123") is True
+
+
+@pytest.mark.regression
+def test_cart_total_includes_last_item():
+    """Author: Kaung. Regression for Cart.total().
+
+    Wrong behaviour: the loop stops one item early, so the last item is not
+    counted (10 + 20 + 5 returns 30).
+    Correct behaviour: total() adds every item in the cart (35).
+    """
+    catalog = Catalog()
+    catalog.add_product(1, "A", 10)
+    catalog.add_product(2, "B", 20)
+    catalog.add_product(3, "C", 5)
+    cart = Cart(catalog)
+    cart.add(1)
+    cart.add(2)
+    cart.add(3)
+    assert cart.total() == 35
+
+
+@pytest.mark.regression
+def test_checkout_empty_cart_returns_none():
+    """Author: Kaung. Regression for Cart.checkout().
+
+    Wrong behaviour: checkout of an empty cart returns [] and saves an
+    empty order in the history.
+    Correct behaviour (from the docstring): return None and save no order.
+    """
+    cart = Cart(Catalog())
+    assert cart.checkout() is None
+    assert cart.history() == []
+
+
+@pytest.mark.regression
+def test_import_products_returns_exact_count():
+    """Author: Kaung. Regression for Cart.import_products().
+
+    Wrong behaviour: importing 2 products returns 3 (count + 1).
+    Correct behaviour: return how many products were imported (2).
+    """
+    cart = Cart(Catalog())
+    assert cart.import_products([(1, "A", 5), (2, "B", 6)]) == 2
 
 
 @pytest.mark.slow
