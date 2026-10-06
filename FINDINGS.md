@@ -45,4 +45,9 @@ Group: Trial run   Members: Kaung
 ---
 
 ## Bug 5
-(to be added after we finish bugs 5 and 6)
+- **Suspected:** `Catalog.search()` in `catalog.py`. The check is `keyword in info["title"]`, which compares letters exactly, so upper and lower case count as different.
+- **Tried:** Added a product titled `"Python Testing"`, then searched for `"python"`. Test: `test_search_ignores_upper_and_lower_case`.
+- **Observed:** `assert [] == [1]`. The search returned an empty list, so the book was not found.
+- **Expected:** `[1]`. A customer who types a lowercase word should still find the book, because the docstring says the search finds titles that contain the keyword.
+- **Fixed:** Changed the check to `keyword.lower() in info["title"].lower()`.
+- **Author:** Kaung
