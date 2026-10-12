@@ -51,6 +51,54 @@ This is a real fault that was reported and fixed. The test makes sure the double
 **6. The recommendation engine still responds when the catalog holds one million titles: slow.**
 One million titles is a very large data set, so the test is heavy and takes a long time. It checks performance under load, and it fits the nightly run. If the engine had failed with big catalogs before, it could also be a regression test, but the scenario does not say that.
 
+## Part B -- Scenario classification
+
+### Scenario 1 : Verify that a password-reset email is delivered within one minute.
+**Answered by: Preston Shah Aman**
+Classification: slow.
+ 
+The test has to wait for up to a minute and depends on an external email service, so it is too slow and too unreliable to run on every push. It belongs in a scheduled or pre-release run. A quick check that the "reset password" request is accepted could be a smoke test, but verifying delivery within one minute is slow.
+
+### Scenario 2 : Verify that a previously fixed bug in shipping-cost calculation has not returned.
+**Answered by: Kaung Myat Tun**
+Classification: regression.
+
+The shipping-cost calculation previously contained a bug that was
+fixed. This test checks that later changes have not reintroduced it.
+
+### Scenario 3 : Verify that a nightly job can generate a sales report from ten years of orders.
+**Answered by: Paing Oo Thant**
+Classification: slow.
+
+Generating a sales report from ten years of orders processes a large
+historical dataset. The test should verify the report's correctness,
+not merely that processing finishes.
+
+### Scenario 4 : Verify that the payment page loads after every deployment.
+**Answered by: Thin Thiri Zaw*
+Classification: smoke.
+
+Checking whether the payment page loads after deployment quickly
+verifies an essential customer feature. It provides basic deployment
+feedback without exhaustively testing payment processing.
+
+### Scenario 5 : Verify that a refund issued twice does not credit the customer twice — a fault reported by a customer last quarter.
+**Answered by: Aung Kyaw Phyo**
+Classification: regression.
+
+A customer previously reported that the same refund could be processed twice, causing the customer to receive two refund credits for a single transaction. This test reproduces the previously reported situation by submitting the same refund request twice. The first refund should successfully credit the customer, while the second identical request should not provide any additional credit. The test passes if the customer receives only one refund in total. This is classified as a regression test because it verifies that a previously fixed defect has not returned after changes have been made to the system.
+
+### Scenario 6 : Verify that the recommendation engine still responds when the catalogue holds one million titles.
+**Answered by: L Peter San Awng**
+Classification: slow.
+
+Testing recommendations with one million titles exercises a large
+dataset and substantial processing work. It would also be regression
+if it reproduced a specific previously fixed defect, but the scenario
+does not state such a history.
+
+---
+
 ## Part F -- Team reflection
 
 **1. Why is running only regression tests before every commit inefficient?**
